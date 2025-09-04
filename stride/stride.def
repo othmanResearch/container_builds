@@ -1,0 +1,36 @@
+Bootstrap: docker
+From: alpine:3.22
+
+%labels
+    Author YourName
+    Version 1.0
+    Description Stride built from source on Alpine
+
+%environment
+    export PATH=/bin:$PATH
+
+%post
+    # Update Alpine and install dependencies
+    apk update && apk add --no-cache \
+        curl \
+        git \
+        alpine-sdk \
+        make
+
+    # Clone the repository
+    git clone https://github.com/MDAnalysis/stride.git /stride
+
+    # Build stride
+    cd /stride/src
+    make
+
+    # Move executable to PATH
+    mv stride /bin/
+
+    # Clean up repository
+    rm -rf /stride
+
+%runscript
+    # Default command when running the container
+    exec stride "$@"
+
