@@ -1,0 +1,46 @@
+Bootstrap: docker
+From: alpine:3.22
+
+%post
+    # Update Alpine and install dependencies
+    apk update && apk add --no-cache \
+        curl \
+        alpine-sdk \
+        make \
+        libxml2-dev \
+        json-c-dev \
+        libc++ \
+        libc++-dev \
+        autoconf \
+        llvm-libunwind-dev \
+        unzip
+
+    # Download freesasa source
+    curl -LO https://freesasa.github.io/freesasa-2.1.2.zip
+
+    # Decompress
+    unzip freesasa-2.1.2.zip
+    cd freesasa-2.1.2
+
+    # Configure, compile, and install
+    ./configure
+    make
+    make install
+
+    # Cleanup
+    cd /
+    rm -rf freesasa-2.1.2 freesasa-2.1.2.zip
+
+%environment
+    export PATH=/usr/local/bin:$PATH
+
+%labels
+    Author "Your Name"
+    Version "freesasa-2.1.2"
+    Description "Singularity image for freesasa built from Alpine 3.22"
+
+%help
+    This container provides freesasa v2.1.2 compiled on Alpine 3.22.
+    Usage:
+        singularity exec freesasa.sif freesasa <options>
+
